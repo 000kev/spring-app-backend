@@ -12,19 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.User.UserBuilder;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import lombok.Data;
 import lekker.game_app.entities.Role;
 import lekker.game_app.entities.User;
 import lekker.game_app.requests.AuthenticationRequest;
-import lekker.game_app.responses.AuthenticationResponse;
-import lekker.game_app.services.JwtService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -109,11 +100,7 @@ public class RegistrationLoginTests {
     }
 
     @Test
-    public void testUniqueRegistration() {
-
-        // JSONObject tokenJson;
-        // String jwtToken = "";
-        // try {
-    
+    public void testTeamCreate() {
+        
     }
 }
