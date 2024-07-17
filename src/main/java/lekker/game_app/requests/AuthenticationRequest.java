@@ -1,4 +1,4 @@
-package lekker.game_app.controllers;
+package lekker.game_app.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationResponse {
-
-    private String token;
-
+public class AuthenticationRequest {
+    private String email;
+    private String password;
 }

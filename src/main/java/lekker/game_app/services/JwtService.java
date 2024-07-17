@@ -1,4 +1,4 @@
-package lekker.game_app.configs;
+package lekker.game_app.services;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package lekker.game_app.controllers;
+package lekker.game_app.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

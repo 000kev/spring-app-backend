@@ -6,6 +6,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lekker.game_app.requests.AuthenticationRequest;
+import lekker.game_app.requests.RegisterRequest;
+import lekker.game_app.responses.AuthenticationResponse;
+import lekker.game_app.services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 
 @RestController

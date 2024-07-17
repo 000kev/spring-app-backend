@@ -1,14 +1,16 @@
-package lekker.game_app.controllers;
+package lekker.game_app.services;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import lekker.game_app.configs.JwtService;
 import lekker.game_app.entities.Role;
 import lekker.game_app.entities.User;
 import lekker.game_app.repositories.UserRepository;
+import lekker.game_app.requests.AuthenticationRequest;
+import lekker.game_app.requests.RegisterRequest;
+import lekker.game_app.responses.AuthenticationResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,17 +22,24 @@ public class AuthenticationService {
     private final AuthenticationManager authManager;
     
     public AuthenticationResponse register(RegisterRequest request) {
-        var user = User.builder()
+        User user = User.builder()
             .firstname(request.getFirstname())
             .lastname(request.getLastname())
             .email(request.getEmail())
             .password(passwordEncoder.encode(request.getPassword()))
             .role(Role.USER)
             .build();
-        userRepository.save(user);
+        if (
+            userRepository.findByEmail(request.getEmail()).isEmpty()
+        ) {
+            userRepository.save(user);
 
-        var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+            String jwtToken = jwtService.generateToken(user);
+            return AuthenticationResponse.builder().token(jwtToken).build();
+        } else {
+            return null;
+        }
+        
     }
 
     public AuthenticationResponse login(AuthenticationRequest request) {
@@ -44,7 +53,11 @@ public class AuthenticationService {
         .orElseThrow();
         
         var jwtToken = jwtService.generateToken(user);
-        return AuthenticationResponse.builder().token(jwtToken).build();
+        return AuthenticationResponse
+        .builder()
+        .password(request.getPassword())
+        .token(jwtToken)
+        .build();
     }
     
 }
