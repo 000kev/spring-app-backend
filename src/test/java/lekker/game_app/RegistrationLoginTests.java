@@ -36,9 +36,7 @@ public class RegistrationLoginTests {
         String pwd = passwordEncoder.encode("tom123");
 
         UserDetails tom = users
-            .firstname("tom")
-            .lastname("riddle")
-            .email("tom.riddle@lekker.com")
+            .username("tom.riddle@lekker.com")
             .password(pwd)
             .role(Role.USER)
             .build();
@@ -71,7 +69,7 @@ public class RegistrationLoginTests {
         assertThat(demoResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         AuthenticationRequest authReq = new AuthenticationRequest();
-        authReq.setEmail("tom.riddle@lekker.com");
+        authReq.setUsername("tom.riddle@lekker.com");
         authReq.setPassword(pwd);
 
         ResponseEntity<String> loginResponse = restTemplate

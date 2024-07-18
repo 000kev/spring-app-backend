@@ -1,5 +1,7 @@
 package lekker.game_app.services;
 
+import java.util.Random;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,15 +24,19 @@ public class AuthenticationService {
     private final AuthenticationManager authManager;
     
     public AuthenticationResponse register(RegisterRequest request) {
+        Random random = new Random();
+        int randomScore = 0;
+        while (randomScore == 0) {
+            randomScore = random.nextInt(21);
+        }
         User user = User.builder()
-            .firstname(request.getFirstname())
-            .lastname(request.getLastname())
-            .email(request.getEmail())
+            .username(request.getUsername())
+            .score(randomScore)
             .password(passwordEncoder.encode(request.getPassword()))
             .role(Role.USER)
             .build();
         if (
-            userRepository.findByEmail(request.getEmail()).isEmpty()
+            userRepository.findByUsername(request.getUsername()).isEmpty()
         ) {
             userRepository.save(user);
 
@@ -44,11 +50,11 @@ public class AuthenticationService {
     public AuthenticationResponse login(AuthenticationRequest request) {
         authManager.authenticate(
             new UsernamePasswordAuthenticationToken(
-                request.getEmail(),
+                request.getUsername(),
                 request.getPassword()
             )
         );
-        var user = userRepository.findByEmail(request.getEmail())
+        var user = userRepository.findByUsername(request.getUsername())
         .orElseThrow();
         
         var jwtToken = jwtService.generateToken(user);

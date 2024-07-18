@@ -1,7 +1,11 @@
 package lekker.game_app.services;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.boot.jackson.JsonObjectSerializer;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -10,10 +14,12 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+
 
 @Service
 public class JwtService {
@@ -67,4 +73,15 @@ public class JwtService {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+    public String extractUsernameFromToken(String token) throws JSONException {
+        token = token.substring(7);
+        String[] chunks = token.split("\\.");
+        Base64.Decoder decoder = Base64.getUrlDecoder();
+        String payload = new String(decoder.decode(chunks[1]));
+        JSONObject tokenJson = new JSONObject(payload);
+        String userEmail = tokenJson.getString("sub");
+        return userEmail;
+    }
+
 }

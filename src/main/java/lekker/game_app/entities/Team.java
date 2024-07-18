@@ -1,5 +1,7 @@
 package lekker.game_app.entities;
 
+import java.util.Stack;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -21,5 +23,6 @@ public class Team {
     private Integer totalScore;
     private Integer maxMembers;
     private Integer currentMembers;
-
+    private String[] teamMembers;
+    private Stack<String> teamRequests; 
 }
