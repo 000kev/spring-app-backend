@@ -1,6 +1,7 @@
 package lekker.game_app.controllers;
 
 import java.util.Base64;
+import java.util.Stack;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,11 +59,34 @@ public class TeamController {
         return ResponseEntity.ok(service.requestToJoin(teamName, token));
     }
 
-    // TEAM OWNERS - view team requests
+    // TEAM OWNERS ONLY - view team requests
     @GetMapping("/request/{teamName}")
-    public ResponseEntity<HttpStatus> viewAllTeamRequests(@PathVariable String teamName) {
-        return null;
+    public ResponseEntity<Stack<String>> viewAllTeamRequests(
+        @PathVariable String teamName,
+        @RequestHeader("Authorization") String token
+    ) {
+        return service.getAllRequests(teamName, token);
     } 
+
+    @PostMapping("/request/accept/{teamName}/{username}")
+    public ResponseEntity<HttpStatus> acceptRequest(
+        @PathVariable("teamName") String teamName,
+        @PathVariable("username") String username,
+        @RequestHeader("Authorization") String token
+    ) {
+        return service.acceptRequest(teamName, username, token);
+    }
+
+    @PostMapping("/request/decline/{teamName}/{username}")
+    public ResponseEntity<HttpStatus> declineRequest(
+        @PathVariable("teamName") String teamName,
+        @PathVariable("username") String username,
+        @RequestHeader("Authorization") String token
+    ) {
+        
+        return service.declineRequest(teamName, username, token);
+    }
+    
     
     
 }
