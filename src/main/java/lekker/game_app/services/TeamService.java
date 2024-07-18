@@ -22,15 +22,18 @@ public class TeamService {
             .totalScore(0)
             .build();
 
-    teamRepository.save(team);
-    
-    return TeamResponse.builder()
-        .teamName(request.getTeamName())
-        .maxMembers(request.getMaxMembers())
-        .currentMembers(1)
-        .ownerName("Owner's name")
-        .totalScore(0)
-        .build();
+        if (teamRepository.findByTeamName(request.getTeamName()).isEmpty()) {
+            teamRepository.save(team);
+            
+            return TeamResponse.builder()
+            .teamName(request.getTeamName())
+            .maxMembers(request.getMaxMembers())
+            .currentMembers(1)
+            .ownerName("Owner's name")
+            .totalScore(0)
+            .build();
+        }
+        return null;
     }
     
 }
