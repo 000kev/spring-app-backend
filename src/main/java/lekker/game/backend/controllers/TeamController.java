@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lekker.game.backend.entities.Team;
 import lekker.game.backend.entities.User;
+import lekker.game.backend.requests.EditRequest;
 import lekker.game.backend.requests.TeamRequest;
 import lekker.game.backend.responses.TeamResponse;
 import lekker.game.backend.services.JwtService;
@@ -50,6 +51,7 @@ public class TeamController {
         return ResponseEntity.ok(service.findUsersInTeam(teamName));
     }
     
+    
     // request to join a team
     @PostMapping("/request/{teamName}")
     public ResponseEntity<String> requestToJoinTeam(
@@ -57,6 +59,16 @@ public class TeamController {
         @RequestHeader("Authorization") String token
         ) {
         return ResponseEntity.ok(service.requestToJoin(teamName, token));
+    }
+
+    // TEAM OWNERS ONLY - edit team name
+    @PostMapping("/edit/{teamName}")
+    public ResponseEntity<HttpStatus> editTeam(
+        @RequestBody EditRequest request,
+        @PathVariable String teamName,
+        @RequestHeader("Authorization") String token
+        ) {
+        return service.editTeam(teamName, request, token);
     }
 
     // TEAM OWNERS ONLY - view team requests
@@ -68,6 +80,7 @@ public class TeamController {
         return service.getAllRequests(teamName, token);
     } 
 
+    // TEAM OWNERS ONLY - accept team requests & add to team
     @PostMapping("/request/accept/{teamName}/{username}")
     public ResponseEntity<HttpStatus> acceptRequest(
         @PathVariable("teamName") String teamName,
@@ -77,6 +90,7 @@ public class TeamController {
         return service.acceptRequest(teamName, username, token);
     }
 
+    // TEAM OWNERS ONLY - decline team requests
     @PostMapping("/request/decline/{teamName}/{username}")
     public ResponseEntity<HttpStatus> declineRequest(
         @PathVariable("teamName") String teamName,

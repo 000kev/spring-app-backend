@@ -12,6 +12,7 @@ import lekker.game.backend.entities.Team;
 import lekker.game.backend.entities.User;
 import lekker.game.backend.repositories.TeamRepository;
 import lekker.game.backend.repositories.UserRepository;
+import lekker.game.backend.requests.EditRequest;
 import lekker.game.backend.requests.TeamRequest;
 import lekker.game.backend.responses.TeamResponse;
 import lombok.RequiredArgsConstructor;
@@ -85,7 +86,7 @@ public class TeamService {
             if ((!user.getRole().equals(Role.TEAM_LEADER))
                 & (user.getUsername().equals(team.getOwnerName()))) 
                 return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
+                .status(HttpStatus.UNAUTHORIZED)
                 .build();
 
             return ResponseEntity.ok(team.getTeamRequests());
@@ -123,7 +124,7 @@ public class TeamService {
             if ((!user.getRole().equals(Role.TEAM_LEADER))
                 & (user.getUsername().equals(team.getOwnerName()))) 
                 return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
+                .status(HttpStatus.UNAUTHORIZED)
                 .build();
 
             Stack<String> updatedStack = new Stack<String>();
@@ -157,8 +158,14 @@ public class TeamService {
             if ((!user.getRole().equals(Role.TEAM_LEADER))
                 & (user.getUsername().equals(team.getOwnerName()))) 
                 return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
+                .status(HttpStatus.UNAUTHORIZED)
                 .build();
+
+            // if team is full
+            if (team.getCurrentMembers() == team.getMaxMembers())
+            return ResponseEntity
+            .status(HttpStatus.INSUFFICIENT_STORAGE)
+            .build(); 
 
             Stack<String> updatedStack = new Stack<String>();
             Iterator<String> requestee = team.getTeamRequests().iterator();
@@ -176,8 +183,14 @@ public class TeamService {
                 }
             }
 
+            if (team.getCurrentMembers() > team.getMaxMembers())
+                return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .build();
+
             team.setTeamRequests(updatedStack);
             team.setTeamMembers(updatedTeamMembers);
+            team.setCurrentMembers(team.getCurrentMembers()+1);
             teamRepository.save(team);
 
             return ResponseEntity
@@ -188,5 +201,46 @@ public class TeamService {
             .status(HttpStatus.NOT_FOUND)
             .build();
         }
-    } 
+    }
+
+    public ResponseEntity<HttpStatus> editTeam(String teamName, EditRequest request, String token) {
+        try {
+            Team team = teamRepository.findByTeamName(teamName).orElseThrow();
+
+            User user = userRepository
+                .findByUsername(jwtService.extractUsernameFromToken(token))
+                .get();
+
+            if ((!user.getRole().equals(Role.TEAM_LEADER))
+                & (user.getUsername().equals(team.getOwnerName()))) 
+                return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .build();
+
+            if (request.getTeamName() != null)
+                team.setTeamName(request.getTeamName());
+
+            // change max members in a team if > 10 and > than number of members in a team
+            int maxMembers = Integer.valueOf(request.getMaxMembers());
+            if (request.getMaxMembers() != null & maxMembers > 10 & maxMembers > team.getCurrentMembers()) {
+                team.setMaxMembers(maxMembers);
+                String[] updatedTeamArray = new String[maxMembers];
+                String[] oldTeamArray = team.getTeamMembers();
+                for (int i = 0; i < oldTeamArray.length; i++) {
+                    updatedTeamArray[i] = oldTeamArray[i];
+                }
+                team.setTeamMembers(updatedTeamArray);
+            }
+
+            teamRepository.save(team);
+
+            return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .build();
+        } catch (Exception e) {
+            return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .build();
+        }
+    }
 }

@@ -3,6 +3,7 @@ package lekker.game.backend.entities;
 import java.util.Stack;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,8 @@ import lombok.NoArgsConstructor;
 @Table
 public class Team {
     @Id
+    @GeneratedValue
+    private Integer id;
     private String teamName;
     private String ownerName;
     private Integer totalScore;
