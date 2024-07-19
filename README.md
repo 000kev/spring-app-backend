@@ -7,7 +7,6 @@ into a single project using Dockerization.
 For the moment, feel free to test the enpoints and logic implemented in the backend and explore the 
 powerful features of SpringBoot.
 
-Link to frontend app [Frontend Remix](www.google.com)
 
 
 
