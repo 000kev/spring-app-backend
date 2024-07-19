@@ -65,7 +65,7 @@ In order to use this application;
   <img width="584" alt="Screenshot 2024-07-19 at 16 12 59" src="https://github.com/user-attachments/assets/8c1d2fa5-62c4-4204-9a2a-1ae5478d9a44">
 
 
-- POST (Secure, Role Access) localhost:7546/team/request/accept/Akatsuki/andyanders@lekker.com
+- POST (Secure, Role Access) localhost:7546/team/request/accept/{teamName}/{username}
   This endpoint allows the authenticated team owner only to accept requests and add them to the team
   <img width="570" alt="Screenshot 2024-07-19 at 16 13 02" src="https://github.com/user-attachments/assets/0dd1c952-bc1c-4908-aecc-314c53a69fe1">
 
