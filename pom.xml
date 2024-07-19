@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>lekker</groupId>
-	<artifactId>game-app</artifactId>
+	<artifactId>game.backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>game-app</name>
+	<name>game.backend</name>
 	<description>Lekker Assessment</description>
 	<url/>
 	<licenses>
