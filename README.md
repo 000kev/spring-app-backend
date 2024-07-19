@@ -4,9 +4,12 @@ This app is a work-in-progress and is currently focused on exploring the feature
 and the implementatin of JWS tokens with Spring Security and secured enpoints. This is the first
 iteration of the project only focusing on the backend before integrating the app with the front end
 into a single project using Dockerization.
-
 For the moment, feel free to test the enpoints and logic implemented in the backend and explore the 
 powerful features of SpringBoot.
+
+Link to frontend app [Frontend Remix](www.google.com)
+
+
 
 
 ## Pre-requisites
