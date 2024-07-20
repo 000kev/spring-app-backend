@@ -271,10 +271,39 @@ public class TeamService {
                 team.setCurrentMembers(team.getCurrentMembers()-1);
                 teamRepository.save(team);
             }
+            else return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .build();
 
             return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
                 .build();
+        } catch (Exception e) {
+            return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .build();
+        }
+    }
+
+    public ResponseEntity<HttpStatus> deleteTeam(String teamName, String token) {
+        try {
+            Team team = teamRepository.findByTeamName(teamName).orElseThrow();
+
+            User user = userRepository
+                .findByUsername(jwtService.extractUsernameFromToken(token))
+                .get();
+
+            if ((!user.getRole().equals(Role.TEAM_LEADER))
+                & (user.getUsername().equals(team.getOwnerName()))) 
+                return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .build();
+
+            teamRepository.deleteById(team.getId());
+
+            return ResponseEntity
+            .status(HttpStatus.ACCEPTED)
+            .build();
         } catch (Exception e) {
             return ResponseEntity
             .status(HttpStatus.NOT_FOUND)

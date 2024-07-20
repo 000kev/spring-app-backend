@@ -19,6 +19,8 @@ import lekker.game.backend.responses.TeamResponse;
 import lekker.game.backend.services.JwtService;
 import lekker.game.backend.services.TeamService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -59,6 +61,15 @@ public class TeamController {
         @RequestHeader("Authorization") String token
         ) {
         return ResponseEntity.ok(service.requestToJoin(teamName, token));
+    }
+
+    // TEAM OWNERS ONLY - delete a team
+    @DeleteMapping("delete/{teamName}")
+    public ResponseEntity<HttpStatus> deleteTeam(
+        @PathVariable String teamName,
+        @RequestHeader("Authorization") String token
+    ) {
+        return service.deleteTeam(teamName, token);
     }
 
     // TEAM OWNERS ONLY - remove user from team

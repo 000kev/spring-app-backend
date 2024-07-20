@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import lekker.game.backend.entities.Team;
 
 @Repository
-public interface TeamRepository extends CrudRepository<Team, String> {
+public interface TeamRepository extends CrudRepository<Team, Integer> {
     Optional<Team> findByTeamName(String teamName);
 }
