@@ -155,6 +155,7 @@ public class TeamService {
             User user = userRepository
                 .findByUsername(jwtService.extractUsernameFromToken(token))
                 .get();
+            User newUser = userRepository.findByUsername(username).orElseThrow();
 
             if ((!user.getRole().equals(Role.TEAM_LEADER))
                 & (user.getUsername().equals(team.getOwnerName()))) 
@@ -192,6 +193,7 @@ public class TeamService {
             team.setTeamRequests(updatedStack);
             team.setTeamMembers(updatedTeamMembers);
             team.setCurrentMembers(team.getCurrentMembers()+1);
+            team.setTotalScore(team.getTotalScore()+newUser.getScore());
             teamRepository.save(team);
 
             return ResponseEntity
@@ -252,6 +254,7 @@ public class TeamService {
             User user = userRepository
                 .findByUsername(jwtService.extractUsernameFromToken(token))
                 .get();
+            User removeUser = userRepository.findByUsername(username).orElseThrow();
 
             if ((!user.getRole().equals(Role.TEAM_LEADER))
                 & (user.getUsername().equals(team.getOwnerName()))) 
@@ -269,6 +272,7 @@ public class TeamService {
                 }
                 team.setTeamMembers(updatedTeamMembers);
                 team.setCurrentMembers(team.getCurrentMembers()-1);
+                team.setTotalScore(team.getTotalScore()-removeUser.getScore());
                 teamRepository.save(team);
             }
             else return ResponseEntity
@@ -300,6 +304,9 @@ public class TeamService {
                 .build();
 
             teamRepository.deleteById(team.getId());
+            // set the user back to a normal user after deleting team
+            user.setRole(Role.USER);
+            userRepository.save(user);
 
             return ResponseEntity
             .status(HttpStatus.ACCEPTED)
