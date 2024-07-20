@@ -71,4 +71,17 @@ In order to use this application;
   This endpoint allows the authenticated team owner only to accept requests and add them to the team
   <img width="570" alt="Screenshot 2024-07-19 at 16 13 02" src="https://github.com/user-attachments/assets/0dd1c952-bc1c-4908-aecc-314c53a69fe1">
 
+- POST (Secure, Role Access) localhost:7546/edit/{teamName}
+  This endpoint accepts either teamName or maxMembers or both in the body and updates the team details with the non-null values
+
+- POST (Secure, Role Access) localhost:7546/remove/{teamName}/{username}
+  This endpoint allows an authorized team owner to remove a team member from their team
+
+- DELETE (Secure, Role Access) localhost:7546/delete/{teamName}
+  This endpoint allows an authorized team owner to delete the team
+
+
+
+
+
 
