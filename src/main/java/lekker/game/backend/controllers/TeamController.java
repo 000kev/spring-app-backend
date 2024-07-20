@@ -61,6 +61,17 @@ public class TeamController {
         return ResponseEntity.ok(service.requestToJoin(teamName, token));
     }
 
+    // TEAM OWNERS ONLY - remove user from team
+    @PostMapping("/remove/{teamName}/{username}")
+    public ResponseEntity<HttpStatus> postMethodName(
+        @PathVariable String teamName,
+        @PathVariable String username,
+        @RequestHeader("Authorization") String token
+    ) {
+        return service.removeUser(teamName, username, token);
+    }
+    
+
     // TEAM OWNERS ONLY - edit team name
     @PostMapping("/edit/{teamName}")
     public ResponseEntity<HttpStatus> editTeam(

@@ -1,5 +1,6 @@
 package lekker.game.backend.services;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Stack;
 
@@ -233,6 +234,43 @@ public class TeamService {
             }
 
             teamRepository.save(team);
+
+            return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .build();
+        } catch (Exception e) {
+            return ResponseEntity
+            .status(HttpStatus.NOT_FOUND)
+            .build();
+        }
+    }
+
+    public ResponseEntity<HttpStatus> removeUser(String teamName, String username, String token) {
+        try {
+            Team team = teamRepository.findByTeamName(teamName).orElseThrow();
+
+            User user = userRepository
+                .findByUsername(jwtService.extractUsernameFromToken(token))
+                .get();
+
+            if ((!user.getRole().equals(Role.TEAM_LEADER))
+                & (user.getUsername().equals(team.getOwnerName()))) 
+                return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .build();
+
+            if (Arrays.asList(team.getTeamMembers()).contains(username)) {
+                String[] updatedTeamMembers = new String[team.getTeamMembers().length];
+                String[] oldTeamMembers = team.getTeamMembers();
+                int j = 0;
+                for (int i = 0; i < oldTeamMembers.length; i++) {
+                    if (oldTeamMembers[i] != username)
+                        updatedTeamMembers[j++] = oldTeamMembers[i];
+                }
+                team.setTeamMembers(updatedTeamMembers);
+                team.setCurrentMembers(team.getCurrentMembers()-1);
+                teamRepository.save(team);
+            }
 
             return ResponseEntity
                 .status(HttpStatus.ACCEPTED)
