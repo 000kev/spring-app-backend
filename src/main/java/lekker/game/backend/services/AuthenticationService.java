@@ -41,9 +41,19 @@ public class AuthenticationService {
             userRepository.save(user);
 
             String jwtToken = jwtService.generateToken(user);
-            return AuthenticationResponse.builder().token(jwtToken).build();
+
+            var role = (user.getRole() == Role.USER ) ? Role.USER : Role.TEAM_LEADER;
+            var score = user.getScore();
+
+            return AuthenticationResponse
+            .builder()
+            .role(role.toString())
+            .score(score)
+            .username(request.getUsername())
+            .token(jwtToken)
+            .build();
         }
-        return null;
+        else throw new Error("Username already exists");
         
     }
 
@@ -58,9 +68,17 @@ public class AuthenticationService {
         .orElseThrow();
         
         var jwtToken = jwtService.generateToken(user);
+
+        var role = user.getRole().toString();
+        var score = user.getScore();
+
+
         return AuthenticationResponse
         .builder()
-        .password(request.getPassword())
+        .role(role)
+        .username(request.getUsername())
+        .score(score)
+        // .password(request.getPassword())
         .token(jwtToken)
         .build();
     }

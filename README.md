@@ -17,6 +17,7 @@ In order to use this application;
 - You must have Docker installed on your machine and MySQL running `docker pull mysql`
 - You must have an HttpClient (Postman)
 - Run the command `docker run -d -e MYSQL_ROOT_PASSWORD=secret -e MYSQL_DATABASE=taskdb --name mysqldb -p 3307:3306 mysql:8.0` as these are the preconfigured settings used in the app.
+- To check the database, enter the mysqldb container, go to exec and enter `mysql -u USERNAME -pPASSWORD -h HOSTNAMEORIP DATABASENAME `
 
 ## Usage
 

@@ -49,6 +49,9 @@ public class TeamService {
             .totalScore(user.getScore())
             .build();
 
+        if (user.getRole() == Role.TEAM_LEADER) {
+            return null;
+        }
         user.setRole(Role.TEAM_LEADER);
         userRepository.save(user);
 
