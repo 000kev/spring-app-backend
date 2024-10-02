@@ -26,20 +26,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-
 @RestController
 @RequestMapping("/team")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 public class TeamController {
     private final TeamService service;
-    
+
     // create a new team
     @PostMapping("/create")
     public ResponseEntity<TeamResponse> create(
-        @RequestBody TeamRequest request,
-        @RequestHeader("Authorization") String token
-        ) {
+            @RequestBody TeamRequest request,
+            @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(service.create(request, token));
     }
 
@@ -49,82 +47,79 @@ public class TeamController {
         return ResponseEntity.ok(service.findAll());
     }
 
-    // view the users inside a team
+    // view specific team
     @GetMapping("/view/{teamName}")
-    public ResponseEntity<String[]> viewTeam(@PathVariable String teamName) {
-        return ResponseEntity.ok(service.findUsersInTeam(teamName));
+    public ResponseEntity<TeamResponse> viewTeam(
+            
+            @PathVariable String teamName) {
+        return ResponseEntity.ok(service.findTeam(teamName));
     }
-    
-    
+
     // request to join a team
     @PostMapping("/request/{teamName}")
     public ResponseEntity<String> requestToJoinTeam(
-        @PathVariable String teamName,
-        @RequestHeader("Authorization") String token
-        ) {
+            @PathVariable String teamName,
+            @RequestHeader("Authorization") String token) {
         return ResponseEntity.ok(service.requestToJoin(teamName, token));
     }
 
+    // TEAM OWNERS - view teams you own
+    @GetMapping("/viewOwned")
+    public ResponseEntity<Iterable<Team>> viewOwnedTeams(@RequestHeader("Authorization") String token) {
+        return ResponseEntity.ok(service.findOwnedTeams(token));
+    }
+
     // TEAM OWNERS ONLY - delete a team
-    @DeleteMapping("delete/{teamName}")
+    @DeleteMapping("/delete/{teamName}")
     public ResponseEntity<HttpStatus> deleteTeam(
-        @PathVariable String teamName,
-        @RequestHeader("Authorization") String token
-    ) {
+            @PathVariable String teamName,
+            @RequestHeader("Authorization") String token) {
         return service.deleteTeam(teamName, token);
     }
 
     // TEAM OWNERS ONLY - remove user from team
     @PostMapping("/remove/{teamName}/{username}")
-    public ResponseEntity<HttpStatus> postMethodName(
-        @PathVariable String teamName,
-        @PathVariable String username,
-        @RequestHeader("Authorization") String token
-    ) {
+    public ResponseEntity<HttpStatus> removeUser(
+            @PathVariable String teamName,
+            @PathVariable String username,
+            @RequestHeader("Authorization") String token) {
         return service.removeUser(teamName, username, token);
     }
-    
 
     // TEAM OWNERS ONLY - edit team name
     @PostMapping("/edit/{teamName}")
     public ResponseEntity<HttpStatus> editTeam(
-        @RequestBody EditRequest request,
-        @PathVariable String teamName,
-        @RequestHeader("Authorization") String token
-        ) {
+            @RequestBody EditRequest request,
+            @PathVariable String teamName,
+            @RequestHeader("Authorization") String token) {
         return service.editTeam(teamName, request, token);
     }
 
     // TEAM OWNERS ONLY - view team requests
     @GetMapping("/request/{teamName}")
     public ResponseEntity<Stack<String>> viewAllTeamRequests(
-        @PathVariable String teamName,
-        @RequestHeader("Authorization") String token
-    ) {
+            @PathVariable String teamName,
+            @RequestHeader("Authorization") String token) {
         return service.getAllRequests(teamName, token);
-    } 
+    }
 
     // TEAM OWNERS ONLY - accept team requests & add to team
     @PostMapping("/request/accept/{teamName}/{username}")
     public ResponseEntity<HttpStatus> acceptRequest(
-        @PathVariable("teamName") String teamName,
-        @PathVariable("username") String username,
-        @RequestHeader("Authorization") String token
-    ) {
+            @PathVariable("teamName") String teamName,
+            @PathVariable("username") String username,
+            @RequestHeader("Authorization") String token) {
         return service.acceptRequest(teamName, username, token);
     }
 
     // TEAM OWNERS ONLY - decline team requests
     @PostMapping("/request/decline/{teamName}/{username}")
     public ResponseEntity<HttpStatus> declineRequest(
-        @PathVariable("teamName") String teamName,
-        @PathVariable("username") String username,
-        @RequestHeader("Authorization") String token
-    ) {
-        
+            @PathVariable("teamName") String teamName,
+            @PathVariable("username") String username,
+            @RequestHeader("Authorization") String token) {
+
         return service.declineRequest(teamName, username, token);
     }
-    
-    
-    
+
 }

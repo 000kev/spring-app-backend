@@ -1,8 +1,11 @@
 package lekker.game.backend.services;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Stack;
+import java.util.stream.StreamSupport;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +29,14 @@ public class TeamService {
     private final JwtService jwtService;
 
     public Iterable<Team> findAll() {
-        return teamRepository.findAll();
+        Iterable<Team> teams = teamRepository.findAll();
+        return teams;
+    }
+
+    public Iterable<Team> findOwnedTeams(String token) {
+        String ownerName = jwtService.extractUsernameFromToken(token);
+        Iterable<Team> teams = teamRepository.findByOwnerName(ownerName).get();
+        return teams;
     }
 
     public TeamResponse create(TeamRequest request, String token) {
@@ -49,9 +59,6 @@ public class TeamService {
             .totalScore(user.getScore())
             .build();
 
-        if (user.getRole() == Role.TEAM_LEADER) {
-            return null;
-        }
         user.setRole(Role.TEAM_LEADER);
         userRepository.save(user);
 
@@ -71,11 +78,19 @@ public class TeamService {
         return null;
     }
 
-    public String[] findUsersInTeam(String teamName) {
+    public TeamResponse findTeam(String teamName) {
         Team team = teamRepository.findByTeamName(teamName).get();
         if (team == null)
             return null;
-        return team.getTeamMembers();
+        return TeamResponse.builder()
+        .teamName(team.getTeamName())
+        .maxMembers(team.getMaxMembers())
+        .currentMembers(team.getCurrentMembers())
+        .ownerName(team.getOwnerName())
+        .teamRequests(team.getTeamRequests())
+        .totalScore(team.getTotalScore())
+        .teamMembers(team.getTeamMembers())
+        .build();
     }
 
     public ResponseEntity<Stack<String>> getAllRequests(String teamName, String token) {
@@ -267,14 +282,16 @@ public class TeamService {
 
             if (Arrays.asList(team.getTeamMembers()).contains(username)) {
                 String[] updatedTeamMembers = new String[team.getTeamMembers().length];
-                String[] oldTeamMembers = team.getTeamMembers();
+
                 int j = 0;
-                for (int i = 0; i < oldTeamMembers.length; i++) {
-                    if (oldTeamMembers[i] != username)
-                        updatedTeamMembers[j++] = oldTeamMembers[i];
+                for (int i = 0; i < updatedTeamMembers.length; i++) {
+                    String member = team.getTeamMembers()[i];
+    
+                    if (!username.equals(member))
+                        updatedTeamMembers[j++] = member;
                 }
                 team.setTeamMembers(updatedTeamMembers);
-                team.setCurrentMembers(team.getCurrentMembers()-1);
+                team.setCurrentMembers(team.getCurrentMembers() - 1);
                 team.setTotalScore(team.getTotalScore()-removeUser.getScore());
                 teamRepository.save(team);
             }
@@ -295,21 +312,26 @@ public class TeamService {
     public ResponseEntity<HttpStatus> deleteTeam(String teamName, String token) {
         try {
             Team team = teamRepository.findByTeamName(teamName).orElseThrow();
+            String ownerName = jwtService.extractUsernameFromToken(token);
 
             User user = userRepository
-                .findByUsername(jwtService.extractUsernameFromToken(token))
+                .findByUsername(ownerName)
                 .get();
 
-            if ((!user.getRole().equals(Role.TEAM_LEADER))
-                & (user.getUsername().equals(team.getOwnerName()))) 
+            if ( !(user.getUsername().equals(team.getOwnerName())) ) 
                 return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .build();
 
             teamRepository.deleteById(team.getId());
-            // set the user back to a normal user after deleting team
-            user.setRole(Role.USER);
-            userRepository.save(user);
+
+            // check to see if user has any remaining teams left
+            Iterable<Team> teams = teamRepository.findByOwnerName(ownerName).get();
+            long teamCount = StreamSupport.stream(teams.spliterator(), false).count();
+            if (teamCount == 0) {
+                user.setRole(Role.USER);
+                userRepository.save(user);
+            }
 
             return ResponseEntity
             .status(HttpStatus.ACCEPTED)
