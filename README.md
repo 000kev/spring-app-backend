@@ -1,9 +1,7 @@
 # Spring-app-backend
 A simple game monitoring app implemented using Springboot and JWS tokens with Spring Security.
 This app is a work-in-progress and is currently focused on exploring the features of SpringBoot
-and the implementatin of JWS tokens with Spring Security and secured enpoints. This is the first
-iteration of the project only focusing on the backend before integrating the app with the front end
-into a single project using Dockerization.
+and the implementatin of JWS tokens with Spring Security and secured enpoints. This repository contains the backend logic and the frontend logic can be found at [React-frontend-app](https://github.com/000kev/game-frontend-react)
 For the moment, feel free to test the enpoints and logic implemented in the backend and explore the 
 powerful features of SpringBoot.
 
